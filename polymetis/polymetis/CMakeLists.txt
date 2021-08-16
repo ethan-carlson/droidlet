@@ -5,7 +5,7 @@
 cmake_minimum_required(VERSION 3.14)
 project(polymetis)
 
-SET(CMAKE_CXX_FLAGS "-std=c++14 -O3")
+SET(CMAKE_CXX_FLAGS "-std=c++17 -O3")
 add_definitions(-D_GLIBCXX_USE_CXX11_ABI=1)
 
 if(DEFINED ENV{PREFIX})
@@ -103,6 +103,7 @@ include_directories(
     ${TORCH_INCLUDE_DIRS}
     ${EIGEN3_INCLUDE_DIR}
     ${pinocchio_INCLUDE_DIRS} 
+    "/home/yixinlin/dev/droidlet/polymetis/polymetis/alephzero/build/include"
 )
 
 add_library(torchrot SHARED
@@ -134,6 +135,7 @@ target_link_libraries(polymetis_server
 )
 target_link_libraries(polymetis_server -Wl,--no-as-needed torchscript_pinocchio)
 target_link_libraries(polymetis_server -Wl,--no-as-needed torchrot)
+target_link_libraries(polymetis_server -Wl,--no-as-needed /home/yixinlin/dev/droidlet/polymetis/polymetis/alephzero/build/lib/libalephzero.a pthread)
 
 add_executable(run_server "src/run_server.cpp")
 target_link_libraries(run_server polymetis_server -Wl,--no-as-needed torchscript_pinocchio)
