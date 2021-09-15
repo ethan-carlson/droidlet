@@ -50,6 +50,7 @@ class StateManager {
   socket = null;
   default_url = "http://localhost:8000";
   connected = false;
+  assumedAgentType = 'locobot';
   initialMemoryState = {
     objects: new Map(),
     humans: new Map(),
@@ -79,6 +80,7 @@ class StateManager {
     this.updateVoxelWorld = this.updateVoxelWorld.bind(this);
     this.setVoxelWorldInitialState = this.setVoxelWorldInitialState.bind(this);
     this.memory = this.initialMemoryState;
+    this.agentType = this.assumedAgentType;
     this.processRGB = this.processRGB.bind(this);
     this.processDepth = this.processDepth.bind(this);
     this.processRGBDepth = this.processRGBDepth.bind(this);
@@ -220,12 +222,14 @@ class StateManager {
       console.log("connect event");
       this.setConnected(true);
       this.socket.emit("get_memory_objects");
+      this.socket.emit("get_agent_type");
     });
 
     socket.on("reconnect", (msg) => {
       console.log("reconnect event");
       this.setConnected(true);
       this.socket.emit("get_memory_objects");
+      this.socket.emit("get_agent_type");
     });
 
     socket.on("disconnect", (msg) => {
@@ -245,6 +249,7 @@ class StateManager {
     socket.on("setChatResponse", this.setChatResponse);
     socket.on("memoryState", this.processMemoryState);
     socket.on("updateState", this.updateStateManagerMemory);
+    socket.on("updateAgentType", this.updateAgentState);
 
     socket.on("rgb", this.processRGB);
     socket.on("depth", this.processDepth);
@@ -269,6 +274,19 @@ class StateManager {
      * components.
      */
     this.memory = data.memory;
+    this.refs.forEach((ref) => {
+      ref.forceUpdate();
+    });
+  }
+
+  updateAgentState(data) {
+    /**
+     * This function sets the statemanager agent type state
+     * to be what's on the server and force re-renders
+     * components.
+     */
+    this.agentType = data.agent_type;
+    // May not need to rerender all components, only the bottom left pane
     this.refs.forEach((ref) => {
       ref.forceUpdate();
     });
