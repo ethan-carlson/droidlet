@@ -18,6 +18,7 @@ import MobileMainPane from "./MobileMainPane";
 import Retrainer from "./components/Retrainer";
 import Navigator from "./components/Navigator";
 import { isMobile } from "react-device-detect";
+import MainPane from "./MainPane";
 
 /**
  * The main state manager for the dashboard.
@@ -75,6 +76,7 @@ class StateManager {
     this.processMemoryState = this.processMemoryState.bind(this);
     this.setChatResponse = this.setChatResponse.bind(this);
     this.setConnected = this.setConnected.bind(this);
+    this.updateAgentState = this.updateAgentState.bind(this);
     this.updateStateManagerMemory = this.updateStateManagerMemory.bind(this);
     this.keyHandler = this.keyHandler.bind(this);
     this.updateVoxelWorld = this.updateVoxelWorld.bind(this);
@@ -282,13 +284,16 @@ class StateManager {
   updateAgentState(data) {
     /**
      * This function sets the statemanager agent type state
-     * to be what's on the server and force re-renders
-     * components.
+     * to be what's on the server, passes it to the MainPane
+     * and re-renders that pane
      */
     this.agentType = data.agent_type;
-    // May not need to rerender all components, only the bottom left pane
+    //MainPane.setState({ agentType: this.agentType });
     this.refs.forEach((ref) => {
-      ref.forceUpdate();
+      if (ref instanceof MainPane) {
+        ref.setState({ agentType: this.agentType });
+        ref.forceUpdate();
+      }
     });
   }
 
