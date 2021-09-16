@@ -51,7 +51,6 @@ class StateManager {
   socket = null;
   default_url = "http://localhost:8000";
   connected = false;
-  assumedAgentType = 'locobot';
   initialMemoryState = {
     objects: new Map(),
     humans: new Map(),
@@ -69,6 +68,7 @@ class StateManager {
     timelineDetails: [],
     timelineFilters: ["Perceive", "Dialogue", "Interpreter", "Memory"],
     timelineSearchPattern: "",
+    agentType: "locobot",
   };
   session_id = null;
 
@@ -82,7 +82,6 @@ class StateManager {
     this.updateVoxelWorld = this.updateVoxelWorld.bind(this);
     this.setVoxelWorldInitialState = this.setVoxelWorldInitialState.bind(this);
     this.memory = this.initialMemoryState;
-    this.agentType = this.assumedAgentType;
     this.processRGB = this.processRGB.bind(this);
     this.processDepth = this.processDepth.bind(this);
     this.processRGBDepth = this.processRGBDepth.bind(this);
@@ -282,17 +281,11 @@ class StateManager {
   }
 
   updateAgentState(data) {
-    /**
-     * This function sets the statemanager agent type state
-     * to be what's on the server, passes it to the MainPane
-     * and re-renders that pane
-     */
-    this.agentType = data.agent_type;
-    //MainPane.setState({ agentType: this.agentType });
+    // Sets stateManager agentType to match backend and passes to MainPane
+    this.memory.agentType = data.agent_type;
     this.refs.forEach((ref) => {
       if (ref instanceof MainPane) {
-        ref.setState({ agentType: this.agentType });
-        ref.forceUpdate();
+        ref.setState({ agentType: this.memory.agentType });
       }
     });
   }

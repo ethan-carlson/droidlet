@@ -25,9 +25,8 @@ class MainPane extends React.Component {
   }
 
   render() {
+    console.log("MainPane rendering agent type: " + this.state.agentType);
     const stateManager = this.props.stateManager;
-    // this.state.agentType = stateManager.agentType;
-    // console.log(this.state.agentType);
 
     if (this.state.agentType === 'locobot'){
       return (
@@ -74,6 +73,12 @@ class MainPane extends React.Component {
             stateManager={stateManager}
           />
         </div>
+      );
+    }
+    else {
+      console.log("MainPane received invalid agent type");
+      return (
+        <h1>Error: Invalid agent type</h1>
       );
     }
   }
